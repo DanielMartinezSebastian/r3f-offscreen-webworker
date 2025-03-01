@@ -34,6 +34,13 @@ function Model() {
     }
   });
 
+  const realisticMaterial = {
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1,
+    metalness: 1,
+    roughness: 0.1,
+  };
+
   return (
     <>
       <Center ref={mesh}>
@@ -45,7 +52,7 @@ function Model() {
           onPointerOut={() => setHover(false)}
           scale={active ? 0.3 : 0.25}
         >
-          <meshStandardMaterial color={color} />
+          <meshStandardMaterial color={color} {...realisticMaterial} />
         </mesh>
       </Center>
       <ContactShadows
