@@ -17,7 +17,7 @@ const worker = new Worker(
 export default function OffScreenCanvas() {
   return (
     <Canvas
-      className="border border-red-500 "
+      className="h-full w-full"
       worker={worker}
       fallback={<AlternativeScene />}
       shadows

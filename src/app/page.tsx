@@ -6,7 +6,7 @@ const OffScreenCanvas = dynamic(() => import("@/components/OffScreenCanvas"), {
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center max-h-screen overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden">
       <OffScreenCanvas />
     </div>
   );
