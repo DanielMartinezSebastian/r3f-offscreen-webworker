@@ -1,6 +1,7 @@
 "use client";
+
 import { lazy } from "react";
-import { Canvas as _Canvas } from "@react-three/offscreen";
+import { Canvas as Canvas_offScreen } from "@react-three/offscreen";
 // import { Canvas } from "@react-three/fiber";
 
 const AlternativeScene = lazy(() => import("@/scenes/AlternativeScene"));
@@ -16,7 +17,7 @@ const worker = new Worker(
 
 export default function OffScreenCanvas() {
   return (
-    <_Canvas
+    <Canvas_offScreen
       className="h-full w-full"
       style={{ height: "100vh", width: "100%" }}
       worker={worker}

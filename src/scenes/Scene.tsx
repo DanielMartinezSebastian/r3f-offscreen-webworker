@@ -8,6 +8,7 @@ import {
   CameraControls,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { useSpring, a } from "@react-spring/three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 console.log("Scene.tsx");
 
@@ -23,9 +24,14 @@ type GLTFResult = GLTF & {
 function Model() {
   const mesh = useRef<THREE.Group>(null);
   const { nodes, materials } = useGLTF("/pmndrs.glb") as unknown as GLTFResult;
-  const [hovered, setHover] = useState<boolean>(false);
-  const [active, setActive] = useState<boolean>(false);
-  const color = hovered ? "hotpink" : "orange";
+  const [active, setActive] = useState(false);
+
+  // 🔥 Animación con useSpring
+  const { scale, rotationX } = useSpring({
+    scale: active ? 0.3 : 0.25, // Se agranda al hacer click
+    rotationX: active ? Math.PI * 2 : 0, // 🔄 Gira 3 vueltas (6 * 180°)
+    config: { mass: 3, tension: 300, friction: 20 }, // Configuración de animación
+  });
 
   useFrame((state, delta) => {
     if (mesh.current) {
@@ -44,19 +50,21 @@ function Model() {
   return (
     <>
       <Center ref={mesh}>
-        <mesh
+        <a.mesh // 🔥 Se usa "a.mesh" para animaciones
           geometry={nodes.cube.geometry}
           material={materials.base}
           onClick={(e) => (e.stopPropagation(), setActive(!active))}
-          onPointerOver={(e) => (e.stopPropagation(), setHover(true))}
-          onPointerOut={() => setHover(false)}
-          scale={active ? 0.3 : 0.25}
+          scale={scale} // 🔄 Se anima con useSpring
+          rotation-x={rotationX} // 🔄 Animación de rotación
         >
-          <meshStandardMaterial color={color} {...realisticMaterial} />
-        </mesh>
+          <meshStandardMaterial
+            color={active ? "hotpink" : "orange"}
+            {...realisticMaterial}
+          />
+        </a.mesh>
       </Center>
       <ContactShadows
-        color={color}
+        color={active ? "hotpink" : "orange"}
         position={[0, -1.5, 0]}
         blur={3}
         opacity={0.75}
