@@ -25,6 +25,7 @@ function Model() {
   const mesh = useRef<THREE.Group>(null);
   const { nodes, materials } = useGLTF("/pmndrs.glb") as unknown as GLTFResult;
   const [active, setActive] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   // 🔥 Animación con useSpring
   const { scale, rotationX } = useSpring({
@@ -54,17 +55,19 @@ function Model() {
           geometry={nodes.cube.geometry}
           material={materials.base}
           onClick={(e) => (e.stopPropagation(), setActive(!active))}
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
           scale={scale} // 🔄 Se anima con useSpring
           rotation-x={rotationX} // 🔄 Animación de rotación
         >
           <meshStandardMaterial
-            color={active ? "hotpink" : "orange"}
+            color={hovered ? "hotpink" : "orange"}
             {...realisticMaterial}
           />
         </a.mesh>
       </Center>
       <ContactShadows
-        color={active ? "hotpink" : "orange"}
+        color={hovered ? "hotpink" : "orange"}
         position={[0, -1.5, 0]}
         blur={3}
         opacity={0.75}
