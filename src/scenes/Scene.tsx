@@ -10,6 +10,7 @@ import {
 import * as THREE from "three";
 import { useSpring, a } from "@react-spring/three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 console.log("Scene.tsx");
 
 type GLTFResult = GLTF & {
