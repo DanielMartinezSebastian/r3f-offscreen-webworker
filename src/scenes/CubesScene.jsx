@@ -111,13 +111,13 @@ function Cubes({ scale: s = 1, ...props }) {
     </group>
   );
 }
-export default function App() {
+export default function CubesScene() {
   const meshRef = useRef();
   const [active, setActive] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   const { scale, rotation } = useSpring({
-    scale: active ? 2 : hovered ? 1.1 : 1,
+    scale: active ? 1.2 : hovered ? 1.1 : 0.6,
     rotation: active ? [0, Math.PI * 2, 0] : [0, 0, 0],
     config: { mass: 10, tension: 280, friction: 20 },
   });
