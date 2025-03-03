@@ -88,7 +88,7 @@ export default function App() {
 
   return (
     <>
-      <OrbitControls makeDefault enableDamping={false} />
+      <OrbitControls />
       <ambientLight />
       <pointLight position={[10, 10, 5]} />
       <Model />
