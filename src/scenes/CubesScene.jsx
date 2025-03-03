@@ -14,14 +14,25 @@ import { useSpring, a } from "@react-spring/three";
 
 extend({ RoundedBoxGeometry });
 
-const NUM = 4;
-const TOT = NUM * NUM * NUM;
-function Cubes({ scale: s = 1, ...props }) {
+// Cambiamos NUM a una prop con valor por defecto
+function Cubes({ scale: s = 1, numCubes = 10, ...props }) {
+  const NUM = numCubes; // Usar el prop pasado
+  const TOT = NUM * NUM * NUM;
   const ref = useRef();
   const { clock } = useThree();
-  const [objects] = useState(() =>
-    [...new Array(TOT)].map(() => new THREE.Object3D())
-  );
+  const [objects, setObjects] = useState([]);
+
+  useEffect(() => {
+    setObjects([...new Array(TOT)].map(() => new THREE.Object3D()));
+  }, [TOT]); // 🔄 Se recrea cuando cambia TOT
+
+  // garantizar que el número de cubos sea actualizado cuando cambie la prop
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.count = TOT;
+      ref.current.instanceMatrix.needsUpdate = true;
+    }
+  }, [TOT]);
 
   const update = useCallback(() => {
     const positions = [];
@@ -53,6 +64,7 @@ function Cubes({ scale: s = 1, ...props }) {
       }
     }
     return positions;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clock]);
 
   const [positions, set] = useState(update);
@@ -63,12 +75,14 @@ function Cubes({ scale: s = 1, ...props }) {
 
   const vec = new THREE.Vector3();
   useFrame(() => {
+    if (objects.length !== TOT) return; // ⛔ Evitar acceder antes de tiempo
+
     let id = 0;
     for (let z = -NUM / 2; z < NUM / 2; z += 1) {
       for (let y = -NUM / 2; y < NUM / 2; y += 1) {
         for (let x = -NUM / 2; x < NUM / 2; x += 1) {
           const s = positions[id];
-          objects[id].position.set(x, y, z);
+          objects[id].position.set(x, y, z); // ✅ Ahora siempre existe
           objects[id].scale.lerp(vec.set(s, s, s), 0.2 - id / TOT / 8);
           objects[id].updateMatrix();
           ref.current.setMatrixAt(id, objects[id++].matrix);
@@ -111,10 +125,24 @@ function Cubes({ scale: s = 1, ...props }) {
     </group>
   );
 }
-export default function CubesScene() {
+
+export default function CubesScene({ numCubes = 10 }) {
   const meshRef = useRef();
   const [active, setActive] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [cubes, setCubes] = useState(numCubes);
+
+  useEffect(() => {
+    setCubes(numCubes);
+  }, [numCubes]);
+
+  useEffect(() => {
+    // Limpieza manual
+    return () => {
+      // Disposición explícita de recursos
+      THREE.Cache.clear();
+    };
+  }, []);
 
   const { scale, rotation } = useSpring({
     scale: active ? 1.2 : hovered ? 1.1 : 0.6,
@@ -144,10 +172,22 @@ export default function CubesScene() {
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
         >
-          <Cubes />
-          <Cubes rotation={[0, 0, Math.PI]} />
-          <Cubes rotation={[0, Math.PI, 0]} />
-          <Cubes rotation={[0, Math.PI, Math.PI]} />
+          <Cubes key={cubes + "-1"} numCubes={cubes} />
+          <Cubes
+            key={cubes + "-2"}
+            numCubes={cubes}
+            rotation={[0, 0, Math.PI]}
+          />
+          <Cubes
+            key={cubes + "-3"}
+            numCubes={cubes}
+            rotation={[0, Math.PI, 0]}
+          />
+          <Cubes
+            key={cubes + "-4"}
+            numCubes={cubes}
+            rotation={[0, Math.PI, Math.PI]}
+          />
         </a.group>
       </Suspense>
     </>

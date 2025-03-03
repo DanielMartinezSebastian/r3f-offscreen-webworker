@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   useGLTF,
   Center,
   ContactShadows,
   Environment,
-  CameraControls,
+  OrbitControls,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useSpring, a } from "@react-spring/three";
@@ -78,13 +78,21 @@ function Model() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // Limpieza manual
+    return () => {
+      // Disposición explícita de recursos
+      THREE.Cache.clear();
+    };
+  }, []);
+
   return (
     <>
+      <OrbitControls makeDefault enableDamping={false} />
       <ambientLight />
       <pointLight position={[10, 10, 5]} />
       <Model />
       <Environment preset="city" />
-      <CameraControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} />
     </>
   );
 }
