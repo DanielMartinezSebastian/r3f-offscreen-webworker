@@ -1,5 +1,7 @@
 import { render } from "@react-three/offscreen";
 import React, { useEffect, useState, Suspense, lazy } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 // Importar solo los IDs/referencias de las escenas, no las escenas completas
 import Scene from "@/scenes/Scene";
 
@@ -19,12 +21,24 @@ type WorkerResponse =
   | { type: "CRITICAL_ERROR"; message: string };
 
 // Componente de fallback ligero para mostrar mientras carga
-const LoadingFallback = () => (
-  <mesh>
-    <boxGeometry args={[1, 1, 1]} />
-    <meshBasicMaterial color="white" wireframe />
-  </mesh>
-);
+const LoadingFallback = () => {
+  const meshRef = React.useRef<THREE.Mesh>(null);
+  useFrame((meshRef) => {
+    meshRef.scene.children[0].rotation.x += 0.01;
+    meshRef.scene.children[0].rotation.y += 0.01;
+    //aumentar escala
+    meshRef.scene.children[0].scale.x += 0.5;
+    meshRef.scene.children[0].scale.y += 0.5;
+    meshRef.scene.children[0].scale.z += 0.5;
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshBasicMaterial color="white" wireframe />
+    </mesh>
+  );
+};
 
 function SceneWithConfig() {
   const [numCubes, setNumCubes] = useState<number>(4); // Valor inicial más conservador
